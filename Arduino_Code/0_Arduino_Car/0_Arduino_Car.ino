@@ -1,8 +1,6 @@
 /*
-Use "myservo.write (angle)" to command the micron servo 
-to the angle degree which has a range from 10 to 180. 
-If it exceeds the range, the micro servo won’t recognize 
-this angle and will keep rotating.
+From elegoo.com
+Main de l'application ARDUI_CAR
 */
 #include <Servo.h> //servo library
 Servo myservo; // create servo object to control servo
@@ -15,6 +13,7 @@ int in4 = 9;
 int ENA = 5;
 int ENB = 11;
 int ABS = 150;
+
 int rightDistance = 0,leftDistance = 0,middleDistance = 0 ;
 void _mForward()
 {
@@ -81,7 +80,8 @@ int Distance_test()
 void setup() 
 { 
   myservo.attach(3);// attach servo on pin 3 to servo object
-  Serial.begin(9600);     
+  Serial.begin(9600);
+  // Initialisation des entrées sorties     
   pinMode(Echo, INPUT);    
   pinMode(Trig, OUTPUT);  
   pinMode(in1,OUTPUT);
@@ -90,18 +90,21 @@ void setup()
   pinMode(in4,OUTPUT);
   pinMode(ENA,OUTPUT);
   pinMode(ENB,OUTPUT);
+
+  //Positionnement du servomoteur a 90 degres
+   myservo.write(90);
+
+   //Stop le robot
   _mStop();
 } 
 
 void loop() 
 { 
     myservo.write(90);//setservo position according to scaled value
-    delay(500); 
     middleDistance = Distance_test();
-    #ifdef send
+    
     Serial.print("middleDistance=");
     Serial.println(middleDistance);
-    #endif
 
     if(middleDistance<=20)
     {     
@@ -111,10 +114,8 @@ void loop()
       delay(1000);      
       rightDistance = Distance_test();
 
-      #ifdef send
       Serial.print("rightDistance=");
       Serial.println(rightDistance);
-      #endif
 
       delay(500);
        myservo.write(90);              
@@ -123,10 +124,8 @@ void loop()
       delay(1000); 
       leftDistance = Distance_test();
 
-      #ifdef send
       Serial.print("leftDistance=");
       Serial.println(leftDistance);
-      #endif
 
       delay(500);
       myservo.write(90);              
