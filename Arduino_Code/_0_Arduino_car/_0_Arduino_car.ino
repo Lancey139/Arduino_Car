@@ -14,6 +14,20 @@ int ENA = 5;
 int ENB = 11;
 int ABS = 150;
 
+// Distance en cm de détection d'un obstacle
+int Obstacle = 40;
+
+// Angle du servo moteur
+int AngleServo = 90;
+int SensRotation = 0;
+int Increment = 5;
+
+// Variable de déplacement
+int Left = 0;
+int Right = 0;
+int TempoLeft = 0;
+int TempoDroite = 0;
+
 int rightDistance = 0,leftDistance = 0,middleDistance = 0 ;
 void _mForward()
 {
@@ -99,59 +113,65 @@ void setup()
 } 
 
 void loop() 
-{ 
-    myservo.write(90);//setservo position according to scaled value
-    middleDistance = Distance_test();
-    
-    Serial.print("middleDistance=");
-    Serial.println(middleDistance);
-
-    if(middleDistance<=20)
-    {     
-      _mStop();
-      delay(500);     
-      myservo.write(10);//10°-180°          
-      delay(1000);      
-      rightDistance = Distance_test();
-
-      Serial.print("rightDistance=");
-      Serial.println(rightDistance);
-
-      delay(500);
-       myservo.write(90);              
-      delay(1000);                                                  
-      myservo.write(180);              
-      delay(1000); 
-      leftDistance = Distance_test();
-
-      Serial.print("leftDistance=");
-      Serial.println(leftDistance);
-
-      delay(500);
-      myservo.write(90);              
-      delay(1000);
-      if(rightDistance>leftDistance)  
+{
+    myservo.write(AngleServo);//setservo position according to scaled value
+    int lDistance = Distance_test();
+    /*
+    Serial.print("lDistance=");
+    Serial.print(lDistance);
+    Serial.print(" Angle mot = ");
+    Serial.println(AngleServo);
+    */
+    if (SensRotation == 0)
+    {
+      AngleServo+= Increment;
+      if (AngleServo >= 170)
       {
-        _mright();
-        delay(360);
-       }
-       else if(rightDistance<leftDistance)
-       {
-        _mleft();
-        delay(360);
-       }
-       else if((rightDistance<=20)||(leftDistance<=20))
-       {
-        _mBack();
-        delay(180);
-       }
-       else
-       {
-        _mForward();
-       }
-    }  
+        SensRotation = 1;
+      }
+    }
     else
-        _mForward();                     
+    {
+      AngleServo-=Increment;
+      if (AngleServo <= 30)
+      {
+        SensRotation = 0;
+      }
+    }
+
+    if(lDistance < Obstacle)
+    {
+      if(AngleServo < 90)
+      {
+        Left = 1;
+        TempoLeft = 0;
+      }
+      else if (AngleServo > 90)
+      {
+        Right = 1;
+        TempoDroite = 0;
+      }
+      
+    }
+
+    // Ordre donné aux roues
+    if(Right ==1)
+      _mright();
+    else if( Left == 1)
+       _mleft();
+    else
+       _mForward();
+
+    // Mise a jour des ordres
+    TempoLeft++;
+    TempoDroite++;
+    if (TempoLeft > 10)
+      Left = 0;
+    if (TempoDroite > 10)
+      Right = 0;    
+    
+    delay(10);
+                     
 }
 
 
