@@ -62,7 +62,7 @@ void loop()
     }
 
     // Détection d'un obstacle en fonction du seuil défini
-    if(lDistance < Obstacle)
+    if(lDistance < Obstacle && Right == 0 && Left == 0)
     {
       // Si le capteur était positionné entre 30 et 90 
       // -> Déplacement à gauche 
@@ -97,10 +97,10 @@ void loop()
     TempoLeft++;
     TempoDroite++;
     
-    // On effectue les ordres pendant 100 ms ou jusqu'a contre ordre
-    if (TempoLeft > delay_ms * 10)
+    // On effectue les ordres pendant X ms 
+    if (TempoLeft > 20)
       Left = 0;
-    if (TempoDroite > delay_ms * 10)
+    if (TempoDroite > 20)
       Right = 0;    
 
     // Delai de delay_ms ms entre 2 mesures
