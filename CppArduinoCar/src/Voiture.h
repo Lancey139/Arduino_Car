@@ -29,7 +29,6 @@ public:
 	int GetAngleServo() { return mAngleServo; };
 	int GetSensRotation() { return mSensRotation; };
 	void SetSensRotation(int pValue) { mSensRotation = pValue; };
-	int GetIncrement() { return mIncrement; };
 	int GetLeft() { return mLeft; };
 	void SetLeft(int pValue) { mLeft = pValue; };
 	int GetRight() { return mRight; };
@@ -48,7 +47,6 @@ private:
 	// Angle du servo moteur
 	int mAngleServo = 90;
 	int mSensRotation = 0;
-	int mIncrement = 5;
 
 	// Variable de déplacement
 	int mLeft = 0;

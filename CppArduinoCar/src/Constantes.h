@@ -12,6 +12,13 @@
 #define End 'E'
 #define SIZEOF_MESSAGESIZE 3
 
+// Battement du moteur
+const int gAngleBas = 30;
+const int gAngleHaut = 170;
+const int gIncrement = 5;
+const int gTailleTableauDistance = (gAngleHaut - gAngleBas) / gIncrement;
+
+//Assination des pins
 const int Echo = A4;
 const int Trig = A5;
 const int in1 = 6;

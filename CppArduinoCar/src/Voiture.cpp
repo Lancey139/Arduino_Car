@@ -94,11 +94,14 @@ int Voiture::MesureDistance()
 	digitalWrite(Trig, LOW);
 	delayMicroseconds(2);
 	digitalWrite(Trig, HIGH);
-	delayMicroseconds(20);
+	delayMicroseconds(10);
 	digitalWrite(Trig, LOW);
-	float Fdistance = pulseIn(Echo, HIGH);
+	float Fdistance = pulseIn(Echo, HIGH, 10000);
 	Fdistance= Fdistance/58;
-	return (int)Fdistance;
+	if (Fdistance == 0)
+		return 100;
+	else
+		return (int)Fdistance;
 }
 
 void Voiture::OrienterCapteur(int pAngle)

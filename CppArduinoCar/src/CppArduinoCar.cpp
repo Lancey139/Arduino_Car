@@ -1,18 +1,23 @@
 #include <Arduino.h>
 #include "Voiture.h"
 #include "Constantes.h"
+#include "VoitureSerialCom.h"
 
 Voiture gVoiture;
-int gAngleServo = 90;
+int gAngleServo = gAngleBas;
 Servo gServo;
+Voiture_SerialCom gVoitureCom;
+
+int gTableauDistance[gTailleTableauDistance];
+int gCompteurElement = 0;
+
 void setup()
 {
-	Serial.begin(9600);
 	gVoiture = Voiture();
-
+	gVoitureCom.begin(9600);
 	// ServoMoteur surlequel repose le capteur Ultrason
 	gServo.attach(pinServoMoteur);
-	gServo.write(90);
+	gServo.write(gAngleBas);
 }
 
 void loop() {
@@ -21,7 +26,15 @@ void loop() {
 	gServo.write(gAngleServo);
 
 	// Mesure sur le capteur Ultrason
+	int lDuree = millis() ;
 	int lDistance = gVoiture.MesureDistance();
+	lDuree = millis() - lDuree;
+
+	// Remplissage du tableua distance
+	if(gCompteurElement <gTailleTableauDistance && gCompteurElement >= 0)
+	{
+		gTableauDistance[gCompteurElement] = lDistance;
+	}
 
 	if (debug == 1)
 	{
@@ -32,21 +45,25 @@ void loop() {
 	}
 
 	// Déplacement du Servomoteur pour préparer la nouvelle mesure
-	// Balayage de l'angle 30 a 170
+	// Balayage de l'angle gAngleBas a gAngleHaut
 	if (gVoiture.GetSensRotation() == 0)
 	{
-		gAngleServo+= gVoiture.GetIncrement();
-		if (gAngleServo >= 170)
+		gAngleServo+= gIncrement;
+		gCompteurElement++;
+		if (gAngleServo >= gAngleHaut)
 		{
 			gVoiture.SetSensRotation(1);
+			gVoitureCom.EnvoyerPosition(gTableauDistance);
 		}
 	}
 	else
 	{
-		gAngleServo-=gVoiture.GetIncrement();
-		if (gAngleServo <= 30)
+		gAngleServo-= gIncrement;
+		gCompteurElement--;
+		if (gAngleServo <= gAngleBas)
 		{
 			gVoiture.SetSensRotation(0);
+			gVoitureCom.EnvoyerPosition(gTableauDistance);
 		}
 	}
 
@@ -76,15 +93,17 @@ void loop() {
 
 	// Ordre donné aux roues
 	if(gVoiture.GetRight() == 1)
+	{
 		gVoiture.Droite();
+		gVoiture.SetTempRight(gVoiture.GetTempRight() + 1);
+	}
 	else if( gVoiture.GetLeft() == 1)
+	{
+		gVoiture.SetTempLeft(gVoiture.GetTempLeft() + 1);
 	   	gVoiture.Gauche();
+	}
 	else
 	  gVoiture.Avancer();
-
-	// Mise a jour des ordres
-	gVoiture.SetTempLeft(gVoiture.GetTempLeft() + 1);
-	gVoiture.SetTempRight(gVoiture.GetTempRight() + 1);
 
 	// On effectue les ordres pendant X ms
 	if (gVoiture.GetTempLeft() > 20)
@@ -93,6 +112,10 @@ void loop() {
 		gVoiture.SetRight(0);
 
 	// Delai de delay_ms ms entre 2 mesures
-	delay(gVoiture.GetDelai());
-
+	// Le délai  sera défini en fonction du temps qu'on a mis a realiser
+	// la mesure de distance
+	if(gVoiture.GetDelai() - lDuree > 0)
+	{
+		delay(gVoiture.GetDelai() - lDuree);
+	}
 }
