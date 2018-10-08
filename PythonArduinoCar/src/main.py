@@ -12,6 +12,9 @@ if __name__ == '__main__':
     mainWin = tkinter.Tk()
     lInterface = FentrePrincipale(mainWin)
     
-    lInterface.PrintPointCartesien((10,10))
+    for j in range(0,10):
+        for i in range(0,360):
+            lInterface.PrintPointPolaire(i, j*10)
+
     
     mainWin.mainloop()

@@ -5,6 +5,7 @@ Created on 4 oct. 2018
 @author: nmeo
 '''
 import tkinter
+import math
 from InterfaceGraphique.Constantes import gVert
 
 class FentrePrincipale(object):
@@ -33,10 +34,6 @@ class FentrePrincipale(object):
         # Affichage de l'origine
         self.PrintPointCartesien((0,0), '#FF0000')
         
-        # Exemple d'affichage de point sur le Canvas
-        #self.canvas.create_oval(125,50,127,52, fill = gVert)
-        #self.canvas.create_oval(150,10,152,12, fill = gVert)
-        
     def PrintPointCartesien(self, pTuple, pColor = gVert):
         """
         Affiche sur le canvas le point passé en paramètre
@@ -47,6 +44,13 @@ class FentrePrincipale(object):
         lY = self.origin[1] - pTuple[1] 
         self.canvas.create_oval(lX-1, lY-1, lX+1 , lY+1, fill = pColor)
     
-    def PrintPointPolaire(self, pAngle, pDistance):
-        pass
+    def PrintPointPolaire(self, pAngle, pDistance, pColor = gVert):
+        """
+        Affiche sur le canvas le point passé en paramètre en coordonnées polaires
+        """
+        lXCarth = pDistance* math.cos(math.radians(pAngle))
+        lYCarth = pDistance * math.sin(math.radians(pAngle))
+        self.PrintPointCartesien((lXCarth,lYCarth), pColor)
+        
+        
         

@@ -22,6 +22,9 @@ void Voiture_SerialCom::EnvoyerPosition(int pTableauDistance[gTailleTableauDista
 
 	String lString_data;
 	char* lData;
+	lString_data += String(gAngleBas) + ";";
+	lString_data += String(gAngleHaut) + ";";
+	lString_data += String(gIncrement) + ";";
 	for(int i = 0 ; i < gTailleTableauDistance; ++i)
 	{
 		lString_data += String(pTableauDistance[i]);
