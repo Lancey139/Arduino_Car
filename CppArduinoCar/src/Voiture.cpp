@@ -99,7 +99,7 @@ int Voiture::MesureDistance()
 	float Fdistance = pulseIn(Echo, HIGH, 10000);
 	Fdistance= Fdistance/58;
 	if (Fdistance == 0)
-		return 100;
+		return gAcquisitionFausse;
 	else
 		return (int)Fdistance;
 }

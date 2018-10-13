@@ -16,15 +16,16 @@ Voiture_SerialCom::Voiture_SerialCom()
 Voiture_SerialCom::~Voiture_SerialCom() {
 }
 
-void Voiture_SerialCom::EnvoyerPosition(int pTableauDistance[gTailleTableauDistance])
+void Voiture_SerialCom::EnvoyerPosition(int pAngleBas, int pAngleHaut, int pIncrement, int pSens, int pTableauDistance[gTailleTableauDistance])
 {
 	int lTaille = 0;
 
 	String lString_data;
 	char* lData;
-	lString_data += String(gAngleBas) + ";";
-	lString_data += String(gAngleHaut) + ";";
-	lString_data += String(gIncrement) + ";";
+	lString_data += String(pAngleBas) + ";";
+	lString_data += String(pAngleHaut) + ";";
+	lString_data += String(pIncrement) + ";";
+	lString_data += String(pSens) + ";";
 	for(int i = 0 ; i < gTailleTableauDistance; ++i)
 	{
 		lString_data += String(pTableauDistance[i]);

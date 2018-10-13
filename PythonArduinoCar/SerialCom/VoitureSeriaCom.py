@@ -1,28 +1,42 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 8 oct. 2018
 
 @author: nmeo
 '''
-from SerialCom import SerialCom
+import threading
+from SerialCom.SerialCom import SerialCom
 
-class VoitureSerialCom(SerialCom):
+class VoitureSerialCom(SerialCom, threading.Thread):
     '''
     Assure la communication avec la voiture Arduino Car
-    HÈrite de la classe Serial Com
+    H√©rite de la classe S√©rial Com
     '''
 
-    def __init__(self, pFenetrePrincipale):
+    def __init__(self, pFenetrePrincipale, pPort, pBaud):
         '''
         Constructor
         '''
-        # Lien vers la fenetre principale
-        self.FenetrePrinciaple = pFenetrePrincipale
+        super().__init__(pPort, pBaud)
+        # Initialise le thread
+        threading.Thread.__init__(self)
         
-        #Dictionnaire contenant pour clÈ l'angle auquel on a rÈalisÈ la mesure et pour valeur la mesure 
+        # Indique l'√©tat du thread
+        self.Run = True
+        
+        # Lien vers la fenetre principale
+        self.FenetrePrincipale = pFenetrePrincipale
+        
+        #Dictionnaire contenant pour cl√© l'angle auquel on a r√©alis√© la mesure et pour valeur la mesure 
         self.DictionnaireMesure = {}
         
-        # Contient le pas d'incrÈmentation du moteur
+        # Contient le pas d'incrementation du moteur
         self.PasIncrementation = 0 
+        
+        # Contient le sens de parcours de la liste des distances recues
+        # Si on recoit 0 la liste est parcourue du haut vers le bas
+        # Si on recoit 1 la liste est parcourue du bas vers le haut
+        self.Sens = 0
         
         #Contient l'angle bas du balayage
         self.AngleBas = 0
@@ -31,24 +45,51 @@ class VoitureSerialCom(SerialCom):
         self.AngleHaut = 0
     
     
-    def LireMessageVoiture(self, pData):
+    def run(self):
         """
-        MÈthode permettant de lire le message provenant de l'arduino car
+        Thread de la communication s√©rie
+        """
+        while self.Run:
+            self.lireMessage()
+    
+    def lireBufferReception(self):
+        """
+        Methode permettant de lire le message provenant de l'arduino car
         pData contient le tableau recu sans l'entete
         """
-        lDataSplit = pData.split(';')
-        self.AngleBas = lDataSplit[0]
-        self.AngleHaut =  lDataSplit[1]
-        self.PasIncrementation = lDataSplit[2]
+        print(self.mBufferReception)
+        lDataSplit = self.mBufferReception.split(';')
+        self.AngleBas = int(lDataSplit[0])
+        self.AngleHaut =  int(lDataSplit[1])
+        self.PasIncrementation = int(lDataSplit[2])
+        self.Sens = int(lDataSplit[3])
         
-        self.DictionnaireMesure.clear()
+        # Calcul des angles correspondant aux mesures
+        lIndice = 4
+        if True:#self.Sens == 1:
+            for lAngle in range(self.AngleBas, self.AngleHaut, self.PasIncrementation):
+                if int(lDataSplit[lIndice]) != 0 :
+                    self.DictionnaireMesure[lAngle] = int(lDataSplit[lIndice])
+                lIndice += 1
+#         elif self.Sens == 0:
+#             for lAngle in reversed(range(self.AngleBas, self.AngleHaut, self.PasIncrementation)):
+#                 if int(lDataSplit[lIndice]) != 0 :
+#                     self.DictionnaireMesure[lAngle] = int(lDataSplit[lIndice])
+#                 lIndice += 1
+                
+        self.RemplirCanvas()
         
-        #TODO a completer
-    
-    
-    def AfficherMesure(self):
+    def RemplirCanvas(self):
         """
-        MÈthode permettant d'afficher le dernier dictionnaire recu sur le canvas
+        Cette m√©thode met a jour l'interface graphique apres reception  du buffer
+        """
+        self.FenetrePrincipale.SupprimerTag("TEMPSREEL")
+        for lItem in self.DictionnaireMesure.items():
+            self.FenetrePrincipale.PrintPointPolaire(lItem[0], lItem[1], "TEMPSREEL")
+    
+    def __str__(self):
+        """
+        Methode permettant d'afficher le dernier dictionnaire recu sur le canvas
         """
         for item in self.DictionnaireMesure.items():
             self.FenetrePrinciaple.PrintPointPolaire(item(0), item(1))

@@ -17,6 +17,7 @@ const int gAngleBas = 30;
 const int gAngleHaut = 170;
 const int gIncrement = 5;
 const int gTailleTableauDistance = (gAngleHaut - gAngleBas) / gIncrement;
+const int gAcquisitionFausse = 100;
 
 //Assination des pins
 const int Echo = A4;

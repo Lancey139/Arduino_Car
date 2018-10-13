@@ -33,7 +33,14 @@ void loop() {
 	// Remplissage du tableua distance
 	if(gCompteurElement <gTailleTableauDistance && gCompteurElement >= 0)
 	{
-		gTableauDistance[gCompteurElement] = lDistance;
+		if (lDistance == gAcquisitionFausse)
+		{
+			gTableauDistance[gCompteurElement] = 0;
+		}
+		else
+		{
+			gTableauDistance[gCompteurElement] = lDistance;
+		}
 	}
 
 	if (debug == 1)
@@ -53,7 +60,7 @@ void loop() {
 		if (gAngleServo >= gAngleHaut)
 		{
 			gVoiture.SetSensRotation(1);
-			gVoitureCom.EnvoyerPosition(gTableauDistance);
+			gVoitureCom.EnvoyerPosition(gAngleBas, gAngleHaut, gIncrement, 1 , gTableauDistance);
 		}
 	}
 	else
@@ -63,7 +70,7 @@ void loop() {
 		if (gAngleServo <= gAngleBas)
 		{
 			gVoiture.SetSensRotation(0);
-			gVoitureCom.EnvoyerPosition(gTableauDistance);
+			gVoitureCom.EnvoyerPosition(gAngleBas, gAngleHaut, gIncrement,0 , gTableauDistance);
 		}
 	}
 
