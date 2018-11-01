@@ -9,6 +9,7 @@
 #define VOITURE_H_
 
 #include <Servo.h>
+#include "Constantes.h"
 
 class Voiture {
 public:
@@ -55,7 +56,7 @@ private:
 	int mTempoDroite = 0;
 
 	// Gestion du temps
-	int mDelay_ms = 10;
+	int mDelay_ms = gIncrement * 2;
 
 };
 

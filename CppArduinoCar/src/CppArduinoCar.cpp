@@ -4,11 +4,13 @@
 #include "VoitureSerialCom.h"
 
 Voiture gVoiture;
+int gAnglePrecedent = 0;
 int gAngleServo = gAngleBas;
 Servo gServo;
 Voiture_SerialCom gVoitureCom;
 
 int gTableauDistance[gTailleTableauDistance];
+int gTableauAngle[gTailleTableauDistance];
 int gCompteurElement = 0;
 
 void setup()
@@ -35,12 +37,13 @@ void loop() {
 	{
 		if (lDistance == gAcquisitionFausse)
 		{
-			gTableauDistance[gCompteurElement] = 0;
+			gTableauDistance[gCompteurElement] = 100;
 		}
 		else
 		{
 			gTableauDistance[gCompteurElement] = lDistance;
 		}
+		gTableauAngle[gCompteurElement] = gAnglePrecedent;
 	}
 
 	if (debug == 1)
@@ -48,29 +51,45 @@ void loop() {
 	  Serial.print("lDistance=");
 	  Serial.print(lDistance);
 	  Serial.print(" Angle mot = ");
-	  Serial.println(gAngleServo);
+	  Serial.println(gAnglePrecedent);
 	}
 
 	// Déplacement du Servomoteur pour préparer la nouvelle mesure
 	// Balayage de l'angle gAngleBas a gAngleHaut
 	if (gVoiture.GetSensRotation() == 0)
 	{
-		gAngleServo+= gIncrement;
-		gCompteurElement++;
-		if (gAngleServo >= gAngleHaut)
+		if (gAngleServo > gAngleHaut - gIncrement)
 		{
 			gVoiture.SetSensRotation(1);
-			gVoitureCom.EnvoyerPosition(gAngleBas, gAngleHaut, gIncrement, 1 , gTableauDistance);
+			gVoitureCom.EnvoyerPosition(gTableauAngle , gTableauDistance);
+
+			gAnglePrecedent = gAngleServo;
+			gAngleServo-= gIncrement;
+			gCompteurElement--;
+		}
+		else
+		{
+			gAnglePrecedent = gAngleServo;
+			gAngleServo+= gIncrement;
+			gCompteurElement++;
 		}
 	}
 	else
 	{
-		gAngleServo-= gIncrement;
-		gCompteurElement--;
-		if (gAngleServo <= gAngleBas)
+		if (gAngleServo < gAngleBas + gIncrement)
 		{
 			gVoiture.SetSensRotation(0);
-			gVoitureCom.EnvoyerPosition(gAngleBas, gAngleHaut, gIncrement,0 , gTableauDistance);
+			gVoitureCom.EnvoyerPosition(gTableauAngle , gTableauDistance);
+
+			gAnglePrecedent = gAngleServo;
+			gAngleServo+= gIncrement;
+			gCompteurElement++;
+		}
+		else
+		{
+			gAnglePrecedent = gAngleServo;
+			gAngleServo-= gIncrement;
+			gCompteurElement--;
 		}
 	}
 

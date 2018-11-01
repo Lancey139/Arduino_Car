@@ -29,21 +29,6 @@ class VoitureSerialCom(SerialCom, threading.Thread):
         
         #Dictionnaire contenant pour clé l'angle auquel on a réalisé la mesure et pour valeur la mesure 
         self.DictionnaireMesure = {}
-        
-        # Contient le pas d'incrementation du moteur
-        self.PasIncrementation = 0 
-        
-        # Contient le sens de parcours de la liste des distances recues
-        # Si on recoit 0 la liste est parcourue du haut vers le bas
-        # Si on recoit 1 la liste est parcourue du bas vers le haut
-        self.Sens = 0
-        
-        #Contient l'angle bas du balayage
-        self.AngleBas = 0
-        
-        #Contient l'angle haut du balayge
-        self.AngleHaut = 0
-    
     
     def run(self):
         """
@@ -59,24 +44,16 @@ class VoitureSerialCom(SerialCom, threading.Thread):
         """
         print(self.mBufferReception)
         lDataSplit = self.mBufferReception.split(';')
-        self.AngleBas = int(lDataSplit[0])
-        self.AngleHaut =  int(lDataSplit[1])
-        self.PasIncrementation = int(lDataSplit[2])
-        self.Sens = int(lDataSplit[3])
+        lDataSplit.remove('')
+
+        lNombreElement = int(lDataSplit[0])
+        lAngleTab = lDataSplit[1:lNombreElement+1]
+        lValeurTab = lDataSplit[lNombreElement+1:]
         
         # Calcul des angles correspondant aux mesures
-        lIndice = 4
-        if True:#self.Sens == 1:
-            for lAngle in range(self.AngleBas, self.AngleHaut, self.PasIncrementation):
-                if int(lDataSplit[lIndice]) != 0 :
-                    self.DictionnaireMesure[lAngle] = int(lDataSplit[lIndice])
-                lIndice += 1
-#         elif self.Sens == 0:
-#             for lAngle in reversed(range(self.AngleBas, self.AngleHaut, self.PasIncrementation)):
-#                 if int(lDataSplit[lIndice]) != 0 :
-#                     self.DictionnaireMesure[lAngle] = int(lDataSplit[lIndice])
-#                 lIndice += 1
-                
+        for lAngle, lValeur in zip(lAngleTab, lValeurTab):
+                self.DictionnaireMesure[int(lAngle)] = int(lValeur)
+
         self.RemplirCanvas()
         
     def RemplirCanvas(self):

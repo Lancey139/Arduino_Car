@@ -15,8 +15,8 @@
 // Battement du moteur
 const int gAngleBas = 30;
 const int gAngleHaut = 170;
-const int gIncrement = 5;
-const int gTailleTableauDistance = (gAngleHaut - gAngleBas) / gIncrement;
+const int gIncrement = 20;
+const int gTailleTableauDistance = ((gAngleHaut - gAngleBas) / gIncrement)+1;
 const int gAcquisitionFausse = 100;
 
 //Assination des pins
@@ -32,6 +32,6 @@ const int ABS = 150;
 const int pinServoMoteur = 3;
 
 // Mode debug
-const int debug = 0;
+const int debug = 1;
 
 #endif /* CONSTANTES_H_ */

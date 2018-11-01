@@ -17,7 +17,7 @@ public:
 
 	Voiture_SerialCom();
 	virtual ~Voiture_SerialCom();
-	void EnvoyerPosition(int pAngleBas, int pAngleHaut, int pIncrement, int pSens, int pTableauDistance[gTailleTableauDistance]);
+	void EnvoyerPosition(int pTableauAngle[gTailleTableauDistance], int pTableauDistance[gTailleTableauDistance]);
 };
 
 #endif /* SRC_VOITURESERIALCOM_H_ */
