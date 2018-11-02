@@ -19,6 +19,9 @@ const int gIncrement = 20;
 const int gTailleTableauDistance = ((gAngleHaut - gAngleBas) / gIncrement)+1;
 const int gAcquisitionFausse = 100;
 
+// Temps entre 2 executions de l'asservissement (Capteurs + moteurs)
+const int gDelayAsservissement = 50;
+
 //Assination des pins
 const int Echo = A4;
 const int Trig = A5;
@@ -32,6 +35,6 @@ const int ABS = 150;
 const int pinServoMoteur = 3;
 
 // Mode debug
-const int debug = 1;
+const int debug = 0;
 
 #endif /* CONSTANTES_H_ */

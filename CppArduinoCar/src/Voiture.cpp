@@ -96,7 +96,7 @@ int Voiture::MesureDistance()
 	digitalWrite(Trig, HIGH);
 	delayMicroseconds(10);
 	digitalWrite(Trig, LOW);
-	float Fdistance = pulseIn(Echo, HIGH, 10000);
+	float Fdistance = pulseIn(Echo, HIGH, 20000);
 	Fdistance= Fdistance/58;
 	if (Fdistance == 0)
 		return gAcquisitionFausse;

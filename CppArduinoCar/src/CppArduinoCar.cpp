@@ -13,6 +13,9 @@ int gTableauDistance[gTailleTableauDistance];
 int gTableauAngle[gTailleTableauDistance];
 int gCompteurElement = 0;
 
+int gGestionIncrement = 0;
+int gTempsExection = 0;
+
 void setup()
 {
 	gVoiture = Voiture();
@@ -22,15 +25,14 @@ void setup()
 	gServo.write(gAngleBas);
 }
 
-void loop() {
+int CapteurUltraSon()
+{
 	// Mise a jour de la position du servomoteur
 	gVoiture.OrienterCapteur(gAngleServo);
 	gServo.write(gAngleServo);
 
 	// Mesure sur le capteur Ultrason
-	int lDuree = millis() ;
 	int lDistance = gVoiture.MesureDistance();
-	lDuree = millis() - lDuree;
 
 	// Remplissage du tableua distance
 	if(gCompteurElement <gTailleTableauDistance && gCompteurElement >= 0)
@@ -92,9 +94,13 @@ void loop() {
 			gCompteurElement--;
 		}
 	}
+	return lDistance;
+}
 
+void ObstacleOvoidance( int pDistance)
+{
 	// Détection d'un obstacle en fonction du seuil défini
-	if(lDistance < gVoiture.GetObstacle() && gVoiture.GetRight() == 0 && gVoiture.GetLeft() == 0)
+	if(pDistance < gVoiture.GetObstacle() && gVoiture.GetRight() == 0 && gVoiture.GetLeft() == 0)
 	{
 		// Si le capteur était positionné entre 30 et 90
 		// -> Déplacement à gauche
@@ -131,17 +137,43 @@ void loop() {
 	else
 	  gVoiture.Avancer();
 
-	// On effectue les ordres pendant X ms
-	if (gVoiture.GetTempLeft() > 20)
+	// On effectue les ordres pendant 400 ms
+	if (gVoiture.GetTempLeft() >= int((400/gVoiture.GetDelai())))
 		gVoiture.SetLeft(0);
-	if (gVoiture.GetTempRight() > 20)
+	if (gVoiture.GetTempRight() >= int((400/gVoiture.GetDelai())))
 		gVoiture.SetRight(0);
+}
+
+
+
+void loop()
+{
+
 
 	// Delai de delay_ms ms entre 2 mesures
 	// Le délai  sera défini en fonction du temps qu'on a mis a realiser
 	// la mesure de distance
-	if(gVoiture.GetDelai() - lDuree > 0)
+	if (gGestionIncrement >= int(gVoiture.GetDelai()/2))
 	{
-		delay(gVoiture.GetDelai() - lDuree);
+		gTempsExection = millis();
+
+		int lDistance = CapteurUltraSon();
+		ObstacleOvoidance(lDistance);
+
+		gTempsExection = millis()- gTempsExection;
+
+		if(gVoiture.GetDelai() - gTempsExection > 0)
+		{
+			// Calcul du nouvel incrément en prenant en compte le temps d'execution du code
+			// Afin que les méthodes CapteurUltraSon + ObstacleOvoidance soient éxécutées
+			// de manière régulière quelquesoit le temps d'éxécution de celle ci
+			// La valeur de l'incrément calcul est donc :
+			// (Temps entre 2 itérations - Temps excution des méthodes) / 2 -> Nombre de pas
+			gGestionIncrement = (gVoiture.GetDelai() - (gVoiture.GetDelai() - gTempsExection)) / 2;
+		}
 	}
+
+
+	gGestionIncrement ++;
+	delay(2);
 }

@@ -14,7 +14,7 @@ class SerialCom(object):
     def __init__(self, pPort, pBaud):
         self.mPort = pPort
         self.mBaud = pBaud
-        self.mSocket = serial.Serial(pPort, pBaud , timeout=0.01)
+        self.mSocket = serial.Serial(pPort, pBaud , timeout=1)
         self.mStart = 'S'
         self.mEnd = 'E'
         self.mBufferEnteteEnvoi = []

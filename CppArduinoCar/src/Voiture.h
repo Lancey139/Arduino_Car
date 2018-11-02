@@ -56,7 +56,7 @@ private:
 	int mTempoDroite = 0;
 
 	// Gestion du temps
-	int mDelay_ms = gIncrement * 2;
+	int mDelay_ms = gDelayAsservissement;
 
 };
 
