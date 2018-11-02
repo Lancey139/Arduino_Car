@@ -37,6 +37,11 @@ void Voiture_SerialCom::EnvoyerPosition(int pTableauAngle[gTailleTableauDistance
 	}
 
 	Serial_Write(lString_data);
+}
 
+void Voiture_SerialCom::ReadMessageFille()
+{
+	Serial.print("Message recu ");
+	Serial.println(mBufferMessage);
 }
 

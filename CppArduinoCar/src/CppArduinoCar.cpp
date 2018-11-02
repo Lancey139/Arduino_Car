@@ -173,6 +173,8 @@ void loop()
 		}
 	}
 
+	// Lecture d'eventuelle message entrant
+	gVoitureCom.Serial_Read();
 
 	gGestionIncrement ++;
 	delay(2);
