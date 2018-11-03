@@ -10,6 +10,7 @@ import threading
 from threading import Lock
 
 from InterfaceGraphique.Constantes import gVert
+from SerialCom.VoitureSeriaCom import VoitureSerialCom
 
 
 class ThreadGraphique(threading.Thread):
@@ -39,6 +40,7 @@ class ThreadGraphique(threading.Thread):
 class FentrePrincipale(object):
     '''
     Fentre principale de l'application
+    Manage aussi le thread de l'interface série
     '''
 
     def __init__(self, pMainWin):
@@ -56,6 +58,10 @@ class FentrePrincipale(object):
         self.canvas = tkinter.Canvas(self.mainWindows , width = self.largeur, height = self.hauteur)
         self.canvas.pack()
         
+        # Ajout des listener sur clavier et la fermeture
+        self.mainWindows.bind("<Key>", self.Clavier)
+        self.mainWindows.bind("<Destroy>", self.Destroy)
+        
         # Definition du point qui servira d'origine au repere
         self.origin = (self.largeur/2,self.hauteur/2)
         
@@ -64,6 +70,9 @@ class FentrePrincipale(object):
         
         # Affichage de l'origine
         self.PrintPointCartesien((0,0), '#FF0000')
+        
+        # Lien vers la communication seire
+        self.VoitureSerialCom = None
     
     def PrintPointCartesien(self, pTuple, pTag, pColor = gVert):
         """
@@ -94,5 +103,38 @@ class FentrePrincipale(object):
         self.Mutex.acquire()
         self.canvas.delete(pTag)
         self.Mutex.release()
+        
+    def Clavier(self, event):
+        """
+        Evenement appeler sur appui d'une touche sur le clavier
+        """
+        lChar = repr(event.char)
+        lChar= lChar.upper()
+        self.VoitureSerialCom.envoyerCommande(lChar)
+        
+    def DemarrerThreadSerie(self, pPortCom, pBaud):
+        """
+        Méthode permettant d'initialiser la connection serie
+        """
+        # Initialisation de la communication série
+        self.VoitureSerialCom = VoitureSerialCom(self, pPortCom, pBaud)
+        self.VoitureSerialCom.start()
+        
+    def StopThreadSerie(self):
+        """
+        Methde permettant de stopper le thread serie
+        """
+        self.VoitureSerialCom.Run = False
+        while self.VoitureSerialCom.is_alive():
+            # On attend la fermeture du thread
+            pass
+    
+    def Destroy(self, event):
+        """
+        Methode appelle a la fermeture de la fenetre
+        """
+        self.StopThreadSerie()
+        
+    
         
         

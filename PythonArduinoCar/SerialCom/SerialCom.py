@@ -81,7 +81,7 @@ class SerialCom(object):
         """
         self.mBufferEnvoi = []
         
-        for element in pContenu:
+        for element in pContenu.replace('\'',''):
             self.mBufferEnvoi.append(element)
             self.mBufferEnvoi.append(';') 
             
@@ -100,6 +100,7 @@ class SerialCom(object):
         
     
     def sendMessage(self):
+        print(self.mBufferEnteteEnvoi + self.mBufferEnvoi)
         for elem in self.mBufferEnteteEnvoi + self.mBufferEnvoi:
             self.mSocket.write(elem.encode())
             

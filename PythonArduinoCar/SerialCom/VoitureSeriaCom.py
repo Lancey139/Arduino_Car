@@ -36,6 +36,7 @@ class VoitureSerialCom(SerialCom, threading.Thread):
         """
         while self.Run:
             self.lireMessage()
+            
     
     def lireBufferReception(self):
         """
@@ -63,6 +64,12 @@ class VoitureSerialCom(SerialCom, threading.Thread):
         self.FenetrePrincipale.SupprimerTag("TEMPSREEL")
         for lItem in self.DictionnaireMesure.items():
             self.FenetrePrincipale.PrintPointPolaire(lItem[0], lItem[1], "TEMPSREEL")
+            
+    def envoyerCommande(self, pLettre):
+        """
+        Envoie a la voiture une commande
+        """
+        self.construireMessage(pLettre)
     
     def __str__(self):
         """

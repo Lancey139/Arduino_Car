@@ -41,7 +41,41 @@ void Voiture_SerialCom::EnvoyerPosition(int pTableauAngle[gTailleTableauDistance
 
 void Voiture_SerialCom::ReadMessageFille()
 {
-	Serial.print("Message recu ");
+	// Analyse du message recu
 	Serial.println(mBufferMessage);
+	switch(mBufferMessage[0])
+	{
+	case 'Z':
+		mVoiture->SetToutDroit(1);
+		break;
+	case 'Q':
+		mVoiture->SetLeft(1);
+		break;
+	case 'D':
+		mVoiture->SetRight(1);
+		break;
+	case 'W':
+		mVoiture->SetToutDroit(0);
+		break;
+	case 'A':
+		mVoiture->SetModeAutomatique(true);
+		break;
+	case 'M':
+		mVoiture->SetModeAutomatique(false);
+		break;
+	case 'V':
+		mVoiture->SetModeSecurite(true);
+		break;
+	case 'B':
+		mVoiture->SetModeSecurite(false);
+		break;
+	case 'F':
+		mVoiture->SetRotation(true);
+		break;
+	case 'G':
+		mVoiture->SetRotation(false);
+		break;
+
+	}
 }
 

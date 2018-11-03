@@ -19,6 +19,7 @@ int gTempsExection = 0;
 void setup()
 {
 	gVoiture = Voiture();
+	gVoitureCom.SetVoiture(&gVoiture);
 	gVoitureCom.begin(9600);
 	// ServoMoteur surlequel repose le capteur Ultrason
 	gServo.attach(pinServoMoteur);
@@ -29,7 +30,10 @@ int CapteurUltraSon()
 {
 	// Mise a jour de la position du servomoteur
 	gVoiture.OrienterCapteur(gAngleServo);
-	gServo.write(gAngleServo);
+	if (gVoiture.GetRotation())
+		gServo.write(gAngleServo);
+	else
+		gServo.write(90);
 
 	// Mesure sur le capteur Ultrason
 	int lDistance = gVoiture.MesureDistance();
@@ -99,8 +103,8 @@ int CapteurUltraSon()
 
 void ObstacleOvoidance( int pDistance)
 {
-	// Détection d'un obstacle en fonction du seuil défini
-	if(pDistance < gVoiture.GetObstacle() && gVoiture.GetRight() == 0 && gVoiture.GetLeft() == 0)
+	// Détection d'un obstacle en fonction du seuil défini et de l'activation ou non du mode sécurité
+	if(gVoiture.GetModeSecurite() && pDistance < gVoiture.GetObstacle() && gVoiture.GetRight() == 0 && gVoiture.GetLeft() == 0)
 	{
 		// Si le capteur était positionné entre 30 et 90
 		// -> Déplacement à gauche
@@ -135,7 +139,18 @@ void ObstacleOvoidance( int pDistance)
 	   	gVoiture.Gauche();
 	}
 	else
-	  gVoiture.Avancer();
+	{
+		if (gVoiture.GetModeAutomatique())
+			gVoiture.Avancer();
+		else if (gVoiture.GetToutDroit() == 1 )
+		{
+			gVoiture.Avancer();
+		}
+		else
+		{
+			gVoiture.Stop();
+		}
+	}
 
 	// On effectue les ordres pendant 400 ms
 	if (gVoiture.GetTempLeft() >= int((400/gVoiture.GetDelai())))

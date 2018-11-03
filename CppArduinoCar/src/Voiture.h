@@ -34,11 +34,19 @@ public:
 	void SetLeft(int pValue) { mLeft = pValue; };
 	int GetRight() { return mRight; };
 	void SetRight(int pValue) { mRight = pValue; };
+	int GetToutDroit() { return mToutDroit; };
+	void SetToutDroit(int pValue) { mToutDroit = pValue; };
 	int GetTempLeft() { return mTempoLeft; };
 	void SetTempLeft(int pValue) { mTempoLeft = pValue; };
 	int GetTempRight() { return mTempoDroite; };
 	void SetTempRight(int pValue) { mTempoDroite = pValue; };
 	int GetDelai() { return mDelay_ms; };
+	bool GetModeAutomatique() {return mModeAutomatique;};
+	void SetModeAutomatique(bool pMode) { mModeAutomatique = pMode;};
+	bool GetModeSecurite() {return mModeSecurite;};
+	void SetModeSecurite(bool pMode) { mModeSecurite = pMode;};
+	bool GetRotation() {return mRotation;};
+	void SetRotation(bool pRot) { mRotation = pRot;};
 
 private:
 	int mPositionCapteur = 90;
@@ -49,9 +57,17 @@ private:
 	int mAngleServo = 90;
 	int mSensRotation = 0;
 
+	// Mode automatique ou asservi
+	bool mModeAutomatique = true;
+	bool mModeSecurite = true;
+
+	// Rotation de la tete
+	bool mRotation = true;
+
 	// Variable de déplacement
 	int mLeft = 0;
 	int mRight = 0;
+	int mToutDroit = 0;
 	int mTempoLeft = 0;
 	int mTempoDroite = 0;
 
