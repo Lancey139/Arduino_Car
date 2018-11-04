@@ -6,6 +6,7 @@ Created on 8 oct. 2018
 '''
 import threading
 from SerialCom.SerialCom import SerialCom
+from InterfaceGraphique.Constantes import gTailleArc
 
 class VoitureSerialCom(SerialCom, threading.Thread):
     '''
@@ -63,7 +64,8 @@ class VoitureSerialCom(SerialCom, threading.Thread):
         """
         self.FenetrePrincipale.SupprimerTag("TEMPSREEL")
         for lItem in self.DictionnaireMesure.items():
-            self.FenetrePrincipale.PrintPointPolaire(lItem[0], lItem[1], "TEMPSREEL")
+            for i in range(-gTailleArc, gTailleArc):
+                self.FenetrePrincipale.PrintPointPolaire(lItem[0] + i, lItem[1], "TEMPSREEL")
             
     def envoyerCommande(self, pLettre):
         """

@@ -81,7 +81,7 @@ class SerialCom(object):
         """
         self.mBufferEnvoi = []
         
-        for element in pContenu.replace('\'',''):
+        for element in pContenu:
             self.mBufferEnvoi.append(element)
             self.mBufferEnvoi.append(';') 
             
